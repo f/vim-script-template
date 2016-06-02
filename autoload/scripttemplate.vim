@@ -10,18 +10,18 @@ set cpo&vim
 
 "#### TemplateSyntax
 
-function! s:tmplSyntaxGroup(filetype)
+function! s:scripttemplateSyntaxGroup(filetype)
   let ft = toupper(a:filetype)
-  return 'JavaScriptPrettyTemplateCodeGroup'.ft
+  return 'ScriptTemplateCodeGroup'.ft
 endfunction
 
-function! s:tmplSyntaxRegion(filetype)
+function! s:scripttemplateSyntaxRegion(filetype)
   let ft = toupper(a:filetype)
-  return 'JavaScriptPrettyCodeRegion'.ft
+  return 'ScriptTemplateCodeRegion'.ft
 endfunction
 
-function! jspretmpl#loadOtherSyntax(filetype)
-  let group = s:tmplSyntaxGroup(a:filetype)
+function! scripttemplate#loadOtherSyntax(filetype)
+  let group = s:scripttemplateSyntaxGroup(a:filetype)
 
   " syntax save
   if exists('b:current_syntax')
@@ -46,41 +46,31 @@ function! jspretmpl#applySyntax(filetype)
   let region = s:tmplSyntaxRegion(a:filetype)
   let b:jspre_current_ft = a:filetype
   if &ft == 'javascript' || &ft == 'typescript'
-    let regexp_start = '`'
-    let regexp_skip = '\\`'
-    let regexp_end = '`'
+    let regexp_start = '<script type="text/template">'
+    let regexp_skip = ''
+    let regexp_end = '</script>'
     let group_def = 'start="'.regexp_start.'" skip="'.regexp_skip.'" end="'.regexp_end.'"'
-    execute 'syntax region '.region.' matchgroup=EcmaScriptTemplateStrings '.group_def.' keepend contains=@'.group
-  elseif &ft == 'coffee'
-    let regexp_start = '"""'
-    let regexp_end = '"""'
-    let group_def = 'start=+'.regexp_start.'+ end=+'.regexp_end.'+'
-    execute 'syntax region '.region.' matchgroup=CoffeeScriptTemplateStringsDouble '.group_def.' keepend contains=@'.group
-
-    let regexp_start = "'''"
-    let regexp_end = "'''"
-    let group_def = 'start=+'.regexp_start.'+ end=+'.regexp_end.'+'
-    execute 'syntax region '.region.' matchgroup=CoffeeScriptTemplateStringsSingle '.group_def.' keepend contains=@'.group
+    execute 'syntax region '.region.' matchgroup=ScriptTemplateStrings '.group_def.' keepend contains=@'.group
   else
     return
   endif
 
 endfunction
 
-function! jspretmpl#loadAndApply(...)
+function! scripttemplate#loadAndApply(...)
   if a:0 == 0
     return
   endif
   let l:ft = a:1
-  call jspretmpl#loadOtherSyntax(l:ft)
-  call jspretmpl#applySyntax(l:ft)
+  call scripttemplate#loadOtherSyntax(l:ft)
+  call scripttemplate#applySyntax(l:ft)
 endfunction
 
-function! jspretmpl#clear()
-  if !exists('b:jspre_current_ft')
+function! scripttemplate#clear()
+  if !exists('b:scripttemplate_current_ft')
     return
   endif
-  execute 'syntax clear '.s:tmplSyntaxRegion(b:jspre_current_ft)
+  execute 'syntax clear '.s:scripttemplateSyntaxRegion(b:jspre_current_ft)
 endfunction
 
 let &cpo = s:save_cpo
