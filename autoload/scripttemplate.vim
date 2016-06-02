@@ -1,5 +1,5 @@
 "============================================================================
-" FILE: autoload/jspre.vim
+" FILE: autoload/scripttemplate.vim
 " AUTHOR: Quramy <yosuke.kurami@gmail.com>
 "============================================================================
 
@@ -41,16 +41,16 @@ function! scripttemplate#loadOtherSyntax(filetype)
   return group
 endfunction
 
-function! jspretmpl#applySyntax(filetype)
-  let group = s:tmplSyntaxGroup(a:filetype)
-  let region = s:tmplSyntaxRegion(a:filetype)
-  let b:jspre_current_ft = a:filetype
-  if &ft == 'javascript' || &ft == 'typescript'
-    let regexp_start = '<script type="text/template">'
-    let regexp_skip = ''
-    let regexp_end = '</script>'
-    let group_def = 'start="'.regexp_start.'" skip="'.regexp_skip.'" end="'.regexp_end.'"'
-    execute 'syntax region '.region.' matchgroup=ScriptTemplateStrings '.group_def.' keepend contains=@'.group
+function! scripttemplate#applySyntax(filetype)
+  let group = s:scripttemplateSyntaxGroup(a:filetype)
+  let region = s:scripttemplateSyntaxRegion(a:filetype)
+  let b:scripttemplate_current_ft = a:filetype
+  if &ft == 'html' || &ft == 'eruby'
+    let regexp_start = "<script [^>]*type *=[^>]*text/template[^>]*>"
+    let regexp_skip = ""
+    let regexp_end = "</script>"
+    let group_def = 'start="'.regexp_start.'"me=s-1 skip="'.regexp_skip.'" end="'.regexp_end.'"me=s-1'
+    execute 'syntax region '.region.' matchgroup=SpecialComment '.group_def.' contains=@'.group
   else
     return
   endif
@@ -70,7 +70,7 @@ function! scripttemplate#clear()
   if !exists('b:scripttemplate_current_ft')
     return
   endif
-  execute 'syntax clear '.s:scripttemplateSyntaxRegion(b:jspre_current_ft)
+  execute 'syntax clear '.s:scripttemplateSyntaxRegion(b:scripttemplate_current_ft)
 endfunction
 
 let &cpo = s:save_cpo
